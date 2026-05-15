@@ -22,7 +22,7 @@ from sklearn.metrics import (
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-mlflow.set_tracking_uri("http://127.0.0.1:5000")
+# mlflow.set_tracking_uri("http://127.0.0.1:5000")
 # mlflow.set_experiment("telco-customer-churn")
 
 FEATURES = ["Contract", "tenure", "MonthlyCharges", "TechSupport", "OnlineSecurity"]
