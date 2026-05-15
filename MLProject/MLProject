@@ -24,7 +24,7 @@ entry_points:
         type: str
         default: "0.0.1"
     command: >
-      python modelling.py
+      python -m modeling
         --data_path {data_path}
         --C {C}
         --solver {solver}
