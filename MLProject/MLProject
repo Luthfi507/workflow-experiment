@@ -1,0 +1,33 @@
+name: churn-classifier
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      data_path:
+        type: str
+        default: "telco_churn.csv"
+      C:
+        type: str
+        default: "0.01,0.1,1,10,100"
+      solver:
+        type: str
+        default: "liblinear,lbfgs"
+      max_iter:
+        type: str
+        default: "100,200,300"
+      penalty:
+        type: str
+        default: "l1,l2"
+      version:
+        type: str
+        default: "0.0.1"
+    command: >
+      python modelling.py
+        --data_path {data_path}
+        --C {C}
+        --solver {solver}
+        --max_iter {max_iter}
+        --penalty {penalty}
+        --version {version}
