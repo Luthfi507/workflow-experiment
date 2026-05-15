@@ -19,15 +19,9 @@ entry_points:
         default: "100,200,300"
       penalty:
         type: str
-        default: "l1,l2"
+        default: "l1,l2,None"
       version:
         type: str
         default: "0.0.1"
     command: >
-      python -m modeling
-        --data_path {data_path}
-        --C {C}
-        --solver {solver}
-        --max_iter {max_iter}
-        --penalty {penalty}
-        --version {version}
+      python -m modeling --data_path {data_path} --C {C} --solver {solver} --max_iter {max_iter} --penalty {penalty}

@@ -19,8 +19,11 @@ from sklearn.metrics import (
     f1_score, confusion_matrix
 )
 
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
-mlflow.set_experiment("telco-customer-churn")
+# mlflow.set_experiment("telco-customer-churn")
 
 FEATURES = ["Contract", "tenure", "MonthlyCharges", "TechSupport", "OnlineSecurity"]
 TARGET = "Churn"
@@ -116,32 +119,32 @@ def evaluate(pipeline, x_test, y_test):
     logger.success(f"Data evaluated successfully in {elapsed:.4f}")
     return metrics
 
-def run(file_path: str, param_grid: dict, version: str):
+def run(file_path: str, param_grid: dict):
     logger.info("=== Pipeline Started ===")
     total_start = time()
 
     df = load_and_validate(file_path)
 
-    with mlflow.start_run(run_name=f"{RUN_NAME}-{version}"):
-        grid_search, x_test, y_test = train(df, MODEL, param_grid)
+    # with mlflow.start_run(run_name=f"{RUN_NAME}-{version}", nested=True):
+    grid_search, x_test, y_test = train(df, MODEL, param_grid)
 
-        best_pipeline = grid_search.best_estimator_  
-        best_params = grid_search.best_params_
+    best_pipeline = grid_search.best_estimator_  
+    best_params = grid_search.best_params_
 
-        metrics = evaluate(best_pipeline, x_test, y_test)
+    metrics = evaluate(best_pipeline, x_test, y_test)
 
-        # Log ke MLflow
-        mlflow.log_params(best_params)
-        mlflow.log_param("param_grid", json.dumps(param_grid))
-        mlflow.log_metric("best_cv_score", grid_search.best_score_)
-        mlflow.log_metrics(metrics)
-        mlflow.log_artifact(CM_PATH)
+    # Log ke MLflow
+    mlflow.log_params(best_params)
+    mlflow.log_param("param_grid", json.dumps(param_grid))
+    mlflow.log_metric("best_cv_score", grid_search.best_score_)
+    mlflow.log_metrics(metrics)
+    mlflow.log_artifact(CM_PATH)
 
-        mlflow.sklearn.log_model(
-            sk_model=best_pipeline,
-            artifact_path="pipeline",
-            input_example=x_test.iloc[:3],
-        )
+    mlflow.sklearn.log_model(
+        sk_model=best_pipeline,
+        artifact_path="pipeline",
+        input_example=x_test.iloc[:3],
+    )
 
     total_elapsed = time() - total_start
     logger.success(f"=== Pipeline processed successfully in {total_elapsed:.4f}s ===")
@@ -193,7 +196,6 @@ def main():
     parser.add_argument("--solver", type=str, default="liblinear,lbfgs")
     parser.add_argument("--max_iter", type=str, default="100,200,300")
     parser.add_argument("--penalty", type=str, default="l1,l2")
-    parser.add_argument("--version", type=str)
     args = parser.parse_args()
 
     PARAM_GRID = {
@@ -206,7 +208,6 @@ def main():
     run(
         file_path=args.data_path,
         param_grid=PARAM_GRID,
-        version=args.version
     )
 
 if __name__ == "__main__":
